@@ -8,7 +8,8 @@ class MessageConsumer {
     fun getCount(): Long = counter.get()
 
     fun consumeMessage(message: ByteArray) {
-        print('+')
-        counter.incrementAndGet()
+        if (counter.incrementAndGet() % 100 == 0L) {
+            println("- ${counter.get()}")
+        }
     }
 }
