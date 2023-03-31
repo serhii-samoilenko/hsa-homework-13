@@ -1,15 +1,11 @@
 package com.example
 
-import com.example.client.RedisPubSubClient
+import com.example.util.Benchmark.benchmarkPubSub
 import com.example.util.Docker
 import com.example.util.Helper
 import com.example.util.Report
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 import javax.enterprise.context.ApplicationScoped
-import kotlin.system.measureTimeMillis
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Queues demo
@@ -21,78 +17,44 @@ fun runDemo(helper: Helper) = with(helper) {
     r.h1("Queues demo demo report")
 
     val docker = Docker(r)
-    val poolSizes = listOf(10, 100, 1000)
+    val poolSizes = listOf(10, 80, 500)
     val messageSizes = listOf(
-        "1-2Kb" to (1024..2048),
-        "10-20Kb" to (1024 * 2..2048 * 2),
+//        "1-2Kb" to (1024..2048),
+//        "10-20Kb" to (1024 * 2..2048 * 2),
         "50-100Kb" to (1024 * 50..2048 * 100),
         "500Kb-1Mb" to (1024 * 500..1024 * 1024),
         "1-10Mb" to (1024 * 1024..1024 * 1024 * 10),
     )
-    val messageCount = 10000L
-    val repeats = 1
+    val duration = 15.seconds
+    val results = LinkedHashMap<String, MutableMap<String, String>>()
 
     r.h2("Redis Pub-Sub")
     r.text("For each Redis persistence mode, another Redis Docker container will be started.")
+    r.line()
+
     r.h3("Redis persistence mode: `no`")
+    val messageBus = "Redis Pub-Sub No persistence"
     val containerHandle = docker.start(Docker.Service.REDIS_NOP)
 
     for (poolSize in poolSizes) {
         for (messageSize in messageSizes) {
-            r.h4("Pool size: `$poolSize`, message count: $messageCount, message size: `${messageSize.first}`")
-            val duration = runPubSubScenario(
-                messageCount = messageCount,
-                repeats = repeats,
-                client = RedisPubSubClient(poolSize),
-                executor = Executors.newFixedThreadPool(poolSize),
+            val loadType = "Pool size: `$poolSize`, message size: `${messageSize.first}`"
+            r.h4(loadType)
+            val result = benchmarkPubSub(
+                duration = duration,
+                poolSize = poolSize,
                 producer = MessageProducer(messageSize.second),
                 consumer = MessageConsumer(),
             )
-            r.text("Duration: `$duration`")
+            r.text("Result: `$result`")
+            results.getOrPut(loadType) { LinkedHashMap() }[messageBus] = result.toString()
         }
     }
     containerHandle.close()
 
+//    r.table(results)
+
     r.writeToFile()
-}
-
-fun runPubSubScenario(
-    messageCount: Long,
-    repeats: Int,
-    client: RedisPubSubClient,
-    executor: ExecutorService,
-    producer: MessageProducer,
-    consumer: MessageConsumer,
-): Duration {
-    client.subscribe(consumer)
-    val duration = try {
-        (1..repeats).map { _ ->
-            measurePubSub(messageCount, client, executor, producer, consumer)
-                .also { Thread.sleep(100) }
-        }.average().milliseconds
-    } finally {
-        executor.shutdown()
-        client.close()
-    }
-    return duration
-}
-
-fun measurePubSub(
-    messageCount: Long,
-    client: RedisPubSubClient,
-    executor: ExecutorService,
-    producer: MessageProducer,
-    consumer: MessageConsumer,
-): Long = measureTimeMillis {
-    for (i in 1..messageCount) {
-        executor.submit {
-            client.publish(producer.nextMessage())
-        }
-    }
-    // wait for all messages to be consumed by the consumer
-    while (consumer.getCount() < messageCount) {
-        Thread.sleep(100)
-    }
 }
 
 @ApplicationScoped

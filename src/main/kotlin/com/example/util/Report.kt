@@ -61,6 +61,9 @@ class Report(
         data = ""
     }
 
+    fun table(data: LinkedHashMap<String, LinkedHashMap<String, String>>) {
+    }
+
     fun table(titleOne: String, titleTwo: String, data: List<Pair<String, String>>) {
         val maxLengthQuery = max(titleOne.length, data.maxByOrNull { it.first.length }?.first?.length ?: 0)
         val maxLengthResult = max(titleTwo.length, data.maxByOrNull { it.second.length }?.second?.length ?: 0)

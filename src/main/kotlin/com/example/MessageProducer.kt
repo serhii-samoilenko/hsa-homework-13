@@ -15,10 +15,10 @@ class MessageProducer(
         for (i in 0 until length) {
             bytes[i] = (Math.random() * 26 + 'a'.code).toInt().toByte()
         }
-//        counter.incrementAndGet()
-        if (counter.incrementAndGet() % 100 == 0L) {
-            println("+ ${counter.get()}")
-        }
+        counter.incrementAndGet()
+//        if (counter.incrementAndGet() % 100 == 0L) {
+//            println("+ ${counter.get()}")
+//        }
         return bytes
     }
 }

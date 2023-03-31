@@ -5,6 +5,7 @@ import redis.clients.jedis.BinaryJedisPubSub
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPoolConfig
 import java.io.Closeable
+import java.util.concurrent.atomic.AtomicInteger
 
 class RedisPubSubClient(private val poolSize: Int) : Closeable {
     private val listeners = mutableListOf<Listener>()
@@ -14,7 +15,7 @@ class RedisPubSubClient(private val poolSize: Int) : Closeable {
     }
     private val publishPool = JedisPool(poolConfig, "redis://localhost:6379/0")
     private val subscribePool = JedisPool(poolConfig, "redis://localhost:6379/0")
-    private val nextChannel = (1 until poolSize)
+    private val nextChannel = (0 until poolSize)
         .map { "channel-$it" }
         .map(String::toByteArray)
         .toCircularIterator()
@@ -22,36 +23,41 @@ class RedisPubSubClient(private val poolSize: Int) : Closeable {
     fun publish(message: ByteArray) {
         publishPool.resource.use { jedis ->
             jedis.publish(nextChannel(), message)
+            print('+')
         }
     }
 
     fun subscribe(messageConsumer: MessageConsumer) {
-        (1 until poolSize).forEach { _ ->
+        (0 until poolSize).forEach { _ ->
             val listener = Listener(messageConsumer).also { listeners.add(it) }
             // Run in a separate thread to avoid blocking the main thread:
             Thread { subscribePool.resource.subscribe(listener, nextChannel()) }.start()
         }
+        // There is no other way to wait for the subscription to be established:
+        Thread.sleep(1000)
     }
 
     override fun close() {
-        listeners.onEach { it.unsubscribe() }.clear()
+        listeners.forEach { it.unsubscribe() }
+        listeners.clear()
         subscribePool.close()
         publishPool.close()
-        Thread.sleep(1000)
     }
 
     class Listener(private val messageConsumer: MessageConsumer) : BinaryJedisPubSub() {
         override fun onMessage(channel: ByteArray, message: ByteArray) {
             messageConsumer.consumeMessage(message)
+            print('-')
         }
     }
 }
 
 private fun <E> List<E>.toCircularIterator(): () -> E {
-    var index = 0
+    val index = AtomicInteger(0)
     return {
-        val result = this[index]
-        index = (index + 1) % this.size
+        val currentIndex = index.getAndIncrement() % this.size
+        val result = this[currentIndex]
+        index.compareAndSet(this.size, 0)
         result
     }
 }
