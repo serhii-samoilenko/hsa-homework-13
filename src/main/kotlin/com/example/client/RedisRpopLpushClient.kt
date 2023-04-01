@@ -1,5 +1,6 @@
 package com.example.client
 
+import com.dinstone.beanstalkc.Configuration
 import com.example.MessageConsumer
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPoolConfig
@@ -14,8 +15,9 @@ class RedisRpopLpushClient(private val poolSize: Int) : Closeable {
     }
     private val publishPool = JedisPool(poolConfig, "redis://localhost:6379/0")
     private val subscribePool = JedisPool(poolConfig, "redis://localhost:6379/0")
+    private val clientId = number++
     private val nextChannel = (0 until poolSize)
-        .map { "rpush-lpop-$it" }
+        .map { "rpush-lpop-$clientId-$it" }
         .map(String::toByteArray)
         .toCircularIterator()
     private val workingChannel = "rpush-lpop-working".toByteArray()
@@ -35,7 +37,7 @@ class RedisRpopLpushClient(private val poolSize: Int) : Closeable {
                 print('-')
             }
             val count = jedis.lrem(workingChannel, 1, bytes)
-            for (i in 1 until count) {
+            for (i in 0 until count) {
                 print('\'')
             }
         }
@@ -44,5 +46,9 @@ class RedisRpopLpushClient(private val poolSize: Int) : Closeable {
     override fun close() {
         subscribePool.close()
         publishPool.close()
+    }
+
+    companion object {
+        private var number = 0
     }
 }

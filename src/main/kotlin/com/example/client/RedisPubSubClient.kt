@@ -14,8 +14,9 @@ class RedisPubSubClient(private val poolSize: Int) : Closeable {
     }
     private val publishPool = JedisPool(poolConfig, "redis://localhost:6379/0")
     private val subscribePool = JedisPool(poolConfig, "redis://localhost:6379/0")
+    private val clientId = number++
     private val nextChannel = (0 until poolSize)
-        .map { "pub-sub-$it" }
+        .map { "pub-sub-$clientId-$it" }
         .map(String::toByteArray)
         .toCircularIterator()
 
@@ -37,7 +38,13 @@ class RedisPubSubClient(private val poolSize: Int) : Closeable {
     }
 
     override fun close() {
-        listeners.forEach { it.unsubscribe() }
+        listeners.forEach {
+            try {
+                it.unsubscribe()
+            } catch (e: Exception) {
+                println("Failed to unsubscribe: ${e.message}")
+            }
+        }
         listeners.clear()
         subscribePool.close()
         publishPool.close()
@@ -48,5 +55,9 @@ class RedisPubSubClient(private val poolSize: Int) : Closeable {
             messageConsumer.consumeMessage(message)
             print('-')
         }
+    }
+
+    companion object {
+        private var number = 0
     }
 }

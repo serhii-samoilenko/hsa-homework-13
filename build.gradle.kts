@@ -22,6 +22,7 @@ dependencies {
     implementation("org.apache.commons:commons-lang3:3.12.0")
     implementation("org.testcontainers:testcontainers:1.17.6")
     implementation("redis.clients:jedis:4.3.2")
+    implementation("com.dinstone:beanstalkc:2.3.0")
     testImplementation("io.quarkus:quarkus-junit5")
 }
 
