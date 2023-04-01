@@ -1,10 +1,10 @@
 package com.example.util
 
-import com.example.MessageConsumer
 import com.example.MessageProducer
 import com.example.client.BeanstalkClient
 import com.example.client.RedisPubSubClient
 import com.example.client.RedisRpopLpushClient
+import java.util.concurrent.Future
 import java.util.concurrent.SynchronousQueue
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.ThreadPoolExecutor.CallerRunsPolicy
@@ -39,33 +39,36 @@ object Benchmark {
         poolSize: Int,
         messageSizes: IntRange,
     ): Result {
-        val producer = MessageProducer(messageSizes)
-        val consumer = MessageConsumer()
         val client = RedisPubSubClient(poolSize)
-        client.subscribe(consumer)
+        client.subscribe()
         val executor = ThreadPoolExecutor(poolSize, poolSize, 100, MILLISECONDS, SynchronousQueue(), CallerRunsPolicy())
+        val pushFutures = mutableListOf<Future<*>>()
         val startTime = System.currentTimeMillis()
         val endTime = startTime + duration.inWholeMilliseconds
         while (System.currentTimeMillis() < endTime) {
             executor.submit {
-                client.publish(producer.nextMessage())
+                client.publish(MessageProducer.next(messageSizes))
+            }.also {
+                pushFutures.add(it)
             }
         }
-        executor.awaitTermination(10, MINUTES)
+        executor.shutdown()
+        executor.awaitTermination(1, MINUTES)
+        pushFutures.forEach { it.get() }
         val publishTime = System.currentTimeMillis() - startTime
         println("\nPublish time: $publishTime")
         // wait for all messages to be consumed by the consumer
         val waitTime = System.currentTimeMillis() + 1.minutes.inWholeMilliseconds
-        while (consumer.getCount() < producer.getCount() && System.currentTimeMillis() < waitTime) {
-            Thread.sleep(1000)
+        while (client.getPopsCount() < client.getPushesCount() && System.currentTimeMillis() < waitTime) {
+            Thread.sleep(100)
         }
         println()
-        if (consumer.getCount() < producer.getCount()) {
-            println("Missing messages: ${producer.getCount() - consumer.getCount()}")
+        if (client.getPopsCount() < client.getPushesCount()) {
+            println("Missing messages: ${client.getPushesCount() - client.getPopsCount()}")
         }
         client.close()
         val consumeTime = System.currentTimeMillis() - startTime
-        return Result(producer.getCount(), consumeTime.milliseconds)
+        return Result(client.getPopsCount(), consumeTime.milliseconds)
     }
 
     fun benchmarkRpushLpop(
@@ -73,39 +76,43 @@ object Benchmark {
         poolSize: Int,
         messageSizes: IntRange,
     ): Result {
-        val producer = MessageProducer(messageSizes)
-        val consumer = MessageConsumer()
         val client = RedisRpopLpushClient(poolSize)
         val pushExecutor = ThreadPoolExecutor(poolSize, poolSize, 100, MILLISECONDS, SynchronousQueue(), CallerRunsPolicy())
         val popExecutor = ThreadPoolExecutor(poolSize, poolSize, 100, MILLISECONDS, SynchronousQueue(), CallerRunsPolicy())
+        val pushFutures = mutableListOf<Future<*>>()
         val startTime = System.currentTimeMillis()
         val endTime = startTime + duration.inWholeMilliseconds
         while (System.currentTimeMillis() < endTime) {
             pushExecutor.submit {
-                client.push(producer.nextMessage())
+                client.push(MessageProducer.next(messageSizes))
+            }.also {
+                pushFutures.add(it)
             }
             popExecutor.submit {
-                client.pop(consumer)
+                client.pop()
             }
         }
-        pushExecutor.awaitTermination(10, MINUTES)
+        pushExecutor.shutdown()
+        pushExecutor.awaitTermination(1, MINUTES)
+        pushFutures.forEach { it.get() }
         val publishTime = System.currentTimeMillis() - startTime
         println("\nPublish time: $publishTime")
-        popExecutor.awaitTermination(10, MINUTES)
         // wait for all messages to be consumed by the consumer
         val waitTime = System.currentTimeMillis() + 1.minutes.inWholeMilliseconds
-        while (consumer.getCount() < producer.getCount() && System.currentTimeMillis() < waitTime) {
+        while (client.getPopsCount() < client.getPushesCount() && System.currentTimeMillis() < waitTime) {
             popExecutor.submit {
-                client.pop(consumer)
+                client.pop()
             }
         }
+        popExecutor.shutdown()
+        popExecutor.awaitTermination(1, MINUTES)
         println()
-        if (consumer.getCount() < producer.getCount()) {
-            println("Missing messages: ${producer.getCount() - consumer.getCount()}")
+        if (client.getPopsCount() < client.getPushesCount()) {
+            println("Missing messages: ${client.getPushesCount() - client.getPopsCount()}")
         }
         client.close()
         val consumeTime = System.currentTimeMillis() - startTime
-        return Result(producer.getCount(), consumeTime.milliseconds)
+        return Result(client.getPopsCount(), consumeTime.milliseconds)
     }
 
     fun benchmarkBeanstalk(
@@ -113,40 +120,42 @@ object Benchmark {
         poolSize: Int,
         messageSizes: IntRange,
     ): Result {
-        val producer = MessageProducer(messageSizes)
-        val consumer = MessageConsumer()
         val client = BeanstalkClient(poolSize)
         val pushExecutor = ThreadPoolExecutor(poolSize, poolSize, 100, MILLISECONDS, SynchronousQueue(), CallerRunsPolicy())
         val popExecutor = ThreadPoolExecutor(poolSize, poolSize, 100, MILLISECONDS, SynchronousQueue(), CallerRunsPolicy())
+        val pushFutures = mutableListOf<Future<*>>()
         val startTime = System.currentTimeMillis()
         val endTime = startTime + duration.inWholeMilliseconds
         while (System.currentTimeMillis() < endTime) {
             pushExecutor.submit {
-                client.push(producer.nextMessage())
+                client.push(MessageProducer.next(messageSizes))
+            }.also {
+                pushFutures.add(it)
             }
             popExecutor.submit {
-                client.pop(consumer)
+                client.pop()
             }
         }
         pushExecutor.shutdown()
         pushExecutor.awaitTermination(1, MINUTES)
+        pushFutures.forEach { it.get() }
         val publishTime = System.currentTimeMillis() - startTime
         println("\nPublish time: $publishTime")
         // wait for all messages to be consumed by the consumer
-        val waitTime = System.currentTimeMillis() + 10.minutes.inWholeMilliseconds
-        while (consumer.getCount() < producer.getCount() && System.currentTimeMillis() < waitTime) {
+        val waitTime = System.currentTimeMillis() + 1.minutes.inWholeMilliseconds
+        while (client.getPopsCount() < client.getPushesCount() && System.currentTimeMillis() < waitTime) {
             popExecutor.submit {
-                client.pop(consumer)
+                client.pop()
             }
         }
         popExecutor.shutdown()
         popExecutor.awaitTermination(1, MINUTES)
         println()
-        if (consumer.getCount() < producer.getCount()) {
-            println("Missing messages: ${producer.getCount() - consumer.getCount()}")
+        if (client.getPopsCount() < client.getPushesCount()) {
+            println("Missing messages: ${client.getPushesCount() - client.getPopsCount()}")
         }
         client.close()
         val consumeTime = System.currentTimeMillis() - startTime
-        return Result(producer.getCount(), consumeTime.milliseconds)
+        return Result(client.getPopsCount(), consumeTime.milliseconds)
     }
 }

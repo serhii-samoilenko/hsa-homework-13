@@ -37,21 +37,25 @@ class Docker(private val r: Report) {
         ),
         BEANSTALKD_NOP(
             GenericContainer(DockerImageName.parse("uretgec/beanstalkd-alpine"))
-                .withCommand("-F")
+                .withCommand("-F", "-z", maxMessageSize)
                 .withReuse(true)
                 .also { it.setPortBindings(listOf("11300:11300")) },
         ),
         BEANSTALKD_0S(
             GenericContainer(DockerImageName.parse("uretgec/beanstalkd-alpine"))
-                .withCommand("-b", "/data", "-f", "0")
+                .withCommand("-b", "/data", "-f", "0", "-z", maxMessageSize)
                 .withReuse(true)
                 .also { it.setPortBindings(listOf("11300:11300")) },
         ),
         BEANSTALKD_1S(
             GenericContainer(DockerImageName.parse("uretgec/beanstalkd-alpine"))
-                .withCommand("-b", "/data", "-f", "1000")
+                .withCommand("-b", "/data", "-f", "1000", "-z", maxMessageSize)
                 .withReuse(true)
                 .also { it.setPortBindings(listOf("11300:11300")) },
         ),
+    }
+
+    companion object {
+        private const val maxMessageSize = (1024 * 1024 * 10).toString()
     }
 }

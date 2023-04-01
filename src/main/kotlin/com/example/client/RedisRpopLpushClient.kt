@@ -1,12 +1,11 @@
 package com.example.client
 
-import com.dinstone.beanstalkc.Configuration
-import com.example.MessageConsumer
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPoolConfig
 import redis.clients.jedis.args.ListDirection.LEFT
 import redis.clients.jedis.args.ListDirection.RIGHT
 import java.io.Closeable
+import java.util.concurrent.atomic.AtomicLong
 
 class RedisRpopLpushClient(private val poolSize: Int) : Closeable {
     private val poolConfig = JedisPoolConfig().also {
@@ -22,18 +21,26 @@ class RedisRpopLpushClient(private val poolSize: Int) : Closeable {
         .toCircularIterator()
     private val workingChannel = "rpush-lpop-working".toByteArray()
 
+    private val pushes = AtomicLong(0)
+    private val pops = AtomicLong(0)
+
+    fun getPushesCount() = pushes.get()
+
+    fun getPopsCount() = pops.get()
+
     fun push(message: ByteArray) {
         publishPool.resource.use { jedis ->
             jedis.rpush(nextChannel(), message)
+            pushes.incrementAndGet()
             print('+')
         }
     }
 
-    fun pop(messageConsumer: MessageConsumer) {
+    fun pop() {
         publishPool.resource.use { jedis ->
             val bytes = jedis.lmove(nextChannel(), workingChannel, LEFT, RIGHT)
             if (bytes != null) {
-                messageConsumer.consumeMessage(bytes)
+                pops.incrementAndGet()
                 print('-')
             }
             val count = jedis.lrem(workingChannel, 1, bytes)

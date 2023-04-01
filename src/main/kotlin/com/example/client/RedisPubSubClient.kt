@@ -1,10 +1,10 @@
 package com.example.client
 
-import com.example.MessageConsumer
 import redis.clients.jedis.BinaryJedisPubSub
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPoolConfig
 import java.io.Closeable
+import java.util.concurrent.atomic.AtomicLong
 
 class RedisPubSubClient(private val poolSize: Int) : Closeable {
     private val listeners = mutableListOf<Listener>()
@@ -20,16 +20,23 @@ class RedisPubSubClient(private val poolSize: Int) : Closeable {
         .map(String::toByteArray)
         .toCircularIterator()
 
+    private val pushes = AtomicLong(0)
+    private val pops = AtomicLong(0)
+
+    fun getPushesCount() = pushes.get()
+    fun getPopsCount() = pops.get()
+
     fun publish(message: ByteArray) {
         publishPool.resource.use { jedis ->
             jedis.publish(nextChannel(), message)
+            pushes.incrementAndGet()
             print('+')
         }
     }
 
-    fun subscribe(messageConsumer: MessageConsumer) {
+    fun subscribe() {
         (0 until poolSize).forEach { _ ->
-            val listener = Listener(messageConsumer).also { listeners.add(it) }
+            val listener = Listener().also { listeners.add(it) }
             // Run in a separate thread to avoid blocking the main thread:
             Thread { subscribePool.resource.subscribe(listener, nextChannel()) }.start()
         }
@@ -50,9 +57,9 @@ class RedisPubSubClient(private val poolSize: Int) : Closeable {
         publishPool.close()
     }
 
-    inner class Listener(private val messageConsumer: MessageConsumer) : BinaryJedisPubSub() {
+    inner class Listener() : BinaryJedisPubSub() {
         override fun onMessage(channel: ByteArray, message: ByteArray) {
-            messageConsumer.consumeMessage(message)
+            pops.incrementAndGet()
             print('-')
         }
     }
