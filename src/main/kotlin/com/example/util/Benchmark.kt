@@ -3,6 +3,7 @@ package com.example.util
 import com.example.MessageConsumer
 import com.example.MessageProducer
 import com.example.client.RedisPubSubClient
+import com.example.client.RedisRpopLpushClient
 import java.util.concurrent.SynchronousQueue
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.ThreadPoolExecutor.CallerRunsPolicy
@@ -34,9 +35,10 @@ object Benchmark {
     fun benchmarkPubSub(
         duration: Duration,
         poolSize: Int,
-        producer: MessageProducer,
-        consumer: MessageConsumer,
+        messageSizes: IntRange,
     ): Result {
+        val producer = MessageProducer(messageSizes)
+        val consumer = MessageConsumer()
         val client = RedisPubSubClient(poolSize)
         client.subscribe(consumer)
         val executor = ThreadPoolExecutor(poolSize, poolSize, 100, MILLISECONDS, SynchronousQueue(), CallerRunsPolicy())
@@ -45,6 +47,41 @@ object Benchmark {
         while (System.currentTimeMillis() < endTime) {
             executor.submit {
                 client.publish(producer.nextMessage())
+            }
+        }
+        executor.shutdown()
+        executor.awaitTermination(10, MINUTES)
+        val publishTime = System.currentTimeMillis() - startTime
+        println("\nPublish time: $publishTime")
+        // wait for all messages to be consumed by the consumer
+        var attempts = 0
+        while (attempts++ < 10 && consumer.getCount() < producer.getCount()) {
+            Thread.sleep(1000)
+        }
+        println()
+        if (consumer.getCount() < producer.getCount()) {
+            println("Missing messages: ${producer.getCount() - consumer.getCount()}")
+        }
+        client.close()
+        val consumeTime = System.currentTimeMillis() - startTime
+        return Result(producer.getCount(), consumeTime.milliseconds)
+    }
+
+    fun benchmarkRpushLpop(
+        duration: Duration,
+        poolSize: Int,
+        messageSizes: IntRange,
+    ): Result {
+        val producer = MessageProducer(messageSizes)
+        val consumer = MessageConsumer()
+        val client = RedisRpopLpushClient(poolSize)
+        val executor = ThreadPoolExecutor(poolSize, poolSize, 100, MILLISECONDS, SynchronousQueue(), CallerRunsPolicy())
+        val startTime = System.currentTimeMillis()
+        val endTime = startTime + duration.inWholeMilliseconds
+        while (System.currentTimeMillis() < endTime) {
+            executor.submit {
+                client.push(producer.nextMessage())
+                client.pop(consumer)
             }
         }
         executor.shutdown()
