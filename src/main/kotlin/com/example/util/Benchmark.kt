@@ -18,7 +18,16 @@ object Benchmark {
         val count: Long,
         val duration: Duration,
     ) {
-        private fun opsPerSecond() = round(1000.0 * count * 1000.0 / duration.inWholeMilliseconds) / 1000.0
+        fun opsPerSecond(): Double {
+            val ops = count * 1000.0 / duration.inWholeMilliseconds
+            return when {
+                ops > 100 -> round(ops)
+                ops > 10 -> round(10.0 * ops) / 10.0
+                ops > 1 -> round(100.0 * ops) / 100.0
+                else -> round(1000.0 * count * 1000.0 / duration.inWholeMilliseconds) / 1000.0
+            }
+        }
+
         override fun toString() = "$count ops in $duration - ${opsPerSecond()} ops/sec"
     }
 

@@ -6,7 +6,6 @@ import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPoolConfig
 import java.io.Closeable
 import java.util.concurrent.atomic.AtomicInteger
-import java.util.concurrent.atomic.AtomicLong
 
 class RedisPubSubClient(private val poolSize: Int) : Closeable {
     private val listeners = mutableListOf<Listener>()
@@ -14,10 +13,6 @@ class RedisPubSubClient(private val poolSize: Int) : Closeable {
         it.minIdle = poolSize
         it.maxTotal = poolSize
     }
-    private val chunkSize = 128
-    private val bytesPublished = AtomicLong(0)
-    private val bytesConsumed = AtomicLong(0)
-
     private val publishPool = JedisPool(poolConfig, "redis://localhost:6379/0")
     private val subscribePool = JedisPool(poolConfig, "redis://localhost:6379/0")
     private val nextChannel = (0 until poolSize)
@@ -28,9 +23,7 @@ class RedisPubSubClient(private val poolSize: Int) : Closeable {
     fun publish(message: ByteArray) {
         publishPool.resource.use { jedis ->
             jedis.publish(nextChannel(), message)
-            if (bytesPublished.addAndGet(message.size.toLong()) % chunkSize == 0L) {
-                print('+')
-            }
+            print('+')
         }
     }
 
@@ -54,9 +47,7 @@ class RedisPubSubClient(private val poolSize: Int) : Closeable {
     inner class Listener(private val messageConsumer: MessageConsumer) : BinaryJedisPubSub() {
         override fun onMessage(channel: ByteArray, message: ByteArray) {
             messageConsumer.consumeMessage(message)
-            if (bytesConsumed.addAndGet(message.size.toLong()) % chunkSize == 0L) {
-                print('-')
-            }
+            print('-')
         }
     }
 }

@@ -61,7 +61,34 @@ class Report(
         data = ""
     }
 
-    fun table(data: LinkedHashMap<String, LinkedHashMap<String, String>>) {
+    fun htmlTable(legend: String, data: LinkedHashMap<String, LinkedHashMap<String, Benchmark.Result>>) {
+        line(htmlTableString(legend, data))
+    }
+
+    private fun htmlTableString(legend: String, data: LinkedHashMap<String, LinkedHashMap<String, Benchmark.Result>>): String {
+        val sb = StringBuilder()
+        sb.append("<table>\n")
+        // Get a list of unique inner keys (column headers)
+        val columnHeaders = data.values.flatMap { it.keys }.toSet()
+        // Generate the first row with header column
+        sb.append("  <tr>\n")
+        sb.append("    <th><i>$legend</i></th>\n") // Legend at the beginning of the header row
+        columnHeaders.forEach { columnHeader ->
+            val header = columnHeader.split(" ").joinToString("<br/>") // Minimize width
+            sb.append("    <th>$header</th>\n")
+        }
+        sb.append("  </tr>\n")
+        // Generate the rest of the rows
+        data.keys.forEach { rowKey ->
+            sb.append("  <tr>\n")
+            sb.append("    <th>$rowKey</th>\n") // Header cell in the first column
+            columnHeaders.forEach { columnHeader ->
+                sb.append("    <td>${data[rowKey]?.get(columnHeader)?.opsPerSecond()}</td>\n")
+            }
+            sb.append("  </tr>\n")
+        }
+        sb.append("</table>")
+        return sb.toString()
     }
 
     fun table(titleOne: String, titleTwo: String, data: List<Pair<String, String>>) {

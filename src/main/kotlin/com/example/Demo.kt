@@ -18,15 +18,20 @@ fun runDemo(helper: Helper) = with(helper) {
     r.h1("Queues demo demo report")
 
     val docker = Docker(r)
-    val poolSizes = listOf(10, 80, 500)
-    val messageSizes = listOf(
-        "1-2Kb" to (1024..1024 * 2),
-        "10-20Kb" to (1024 * 10..1024 * 20),
-        "50-100Kb" to (1024 * 50..1024 * 100),
-        "500Kb-1Mb" to (1024 * 500..1024 * 1024),
-        "2-10Mb" to (1024 * 1024 * 2..1024 * 1024 * 10),
+    val poolSizes = listOf(
+        10,
+//        80,
+//        500,
     )
-    val duration = 15.seconds
+    val messageSizes = listOf(
+//        "1-2Kb" to (1024..1024 * 2),
+        "10-20Kb" to (1024 * 10..1024 * 20),
+//        "50-100Kb" to (1024 * 50..1024 * 100),
+//        "500Kb-1Mb" to (1024 * 500..1024 * 1024),
+//        "5-10Mb" to (1024 * 1024 * 5..1024 * 1024 * 10),
+    )
+    val runDuration = 3.seconds
+    val cooldownDuration = 1.seconds
     val results = LinkedHashMap<String, LinkedHashMap<String, Result>>()
 
     r.h2("Redis Pub-Sub")
@@ -35,8 +40,8 @@ fun runDemo(helper: Helper) = with(helper) {
 
     val redisConfigurations = listOf(
         "Redis Pub-Sub NoP" to Docker.Service.REDIS_NOP,
-        "Redis Pub-Sub AOF" to Docker.Service.REDIS_AOF,
-        "Redis Pub-Sub RDB" to Docker.Service.REDIS_RDB,
+//        "Redis Pub-Sub AOF" to Docker.Service.REDIS_AOF,
+//        "Redis Pub-Sub RDB" to Docker.Service.REDIS_RDB,
     )
 
     for ((messageBusConfig, service) in redisConfigurations) {
@@ -44,10 +49,13 @@ fun runDemo(helper: Helper) = with(helper) {
         val containerHandle = docker.start(service)
         for (poolSize in poolSizes) {
             for ((size, bytes) in messageSizes) {
-                val loadType = "Pool size: `$poolSize`, message size: `$size`"
-                r.h4(loadType)
+                println("Waiting for $cooldownDuration before starting next test")
+                Thread.sleep(cooldownDuration.inWholeMilliseconds)
+
+                val loadType = "Pool: $poolSize, payload: $size"
+                r.h4("Pool size: `$poolSize`, message size: `$size`")
                 val result = benchmarkPubSub(
-                    duration = duration,
+                    duration = runDuration,
                     poolSize = poolSize,
                     producer = MessageProducer(bytes),
                     consumer = MessageConsumer(),
@@ -58,7 +66,8 @@ fun runDemo(helper: Helper) = with(helper) {
         }
         containerHandle.close()
     }
-//    r.table(results)
+
+    r.htmlTable("Ops/sec", results)
 
     r.writeToFile()
 }
