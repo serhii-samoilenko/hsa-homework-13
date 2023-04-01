@@ -3,8 +3,10 @@ package com.example.util
 import com.example.MessageConsumer
 import com.example.MessageProducer
 import com.example.client.RedisPubSubClient
-import java.util.concurrent.Executors
+import java.util.concurrent.SynchronousQueue
 import java.util.concurrent.ThreadPoolExecutor
+import java.util.concurrent.ThreadPoolExecutor.CallerRunsPolicy
+import java.util.concurrent.TimeUnit.MILLISECONDS
 import java.util.concurrent.TimeUnit.MINUTES
 import kotlin.math.round
 import kotlin.time.Duration
@@ -28,27 +30,24 @@ object Benchmark {
     ): Result {
         val client = RedisPubSubClient(poolSize)
         client.subscribe(consumer)
-        val threads = poolSize
-        val executor = Executors.newFixedThreadPool(threads) as ThreadPoolExecutor
+        val executor = ThreadPoolExecutor(poolSize, poolSize, 100, MILLISECONDS, SynchronousQueue(), CallerRunsPolicy())
         val startTime = System.currentTimeMillis()
         val endTime = startTime + duration.inWholeMilliseconds
         while (System.currentTimeMillis() < endTime) {
-            val totalCount = executor.activeCount + executor.queue.size
-            val capacity = threads - totalCount - 1
-            for (i in 0 until capacity) {
-                executor.submit {
-                    client.publish(producer.nextMessage())
-                }
+            executor.submit {
+                client.publish(producer.nextMessage())
             }
         }
         executor.shutdown()
         executor.awaitTermination(10, MINUTES)
         val publishTime = System.currentTimeMillis() - startTime
-//        println("Publish time: $publishTime")
+        println("\nPublish time: $publishTime")
         // wait for all messages to be consumed by the consumer
-        if (consumer.getCount() < producer.getCount()) {
+        var attempts = 0
+        while (attempts++ < 10 && consumer.getCount() < producer.getCount()) {
             Thread.sleep(1000)
         }
+        println()
         if (consumer.getCount() < producer.getCount()) {
             println("Missing messages: ${producer.getCount() - consumer.getCount()}")
         }

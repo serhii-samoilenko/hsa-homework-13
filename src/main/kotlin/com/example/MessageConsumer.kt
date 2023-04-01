@@ -9,8 +9,5 @@ class MessageConsumer {
 
     fun consumeMessage(message: ByteArray) {
         counter.incrementAndGet()
-//        if (counter.incrementAndGet() % 100 == 0L) {
-//            println("- ${counter.get()}")
-//        }
     }
 }
