@@ -40,6 +40,13 @@ Tests also use different message sizes:
 All queues run with default settings, so timeouts sometimes happen on large concurrency levels and large message sizes.
 These timeouts are also reported in the report as a percentage of total operations. 
 
+To make the testing process less boring and more informative, the demo also prints outputs to console, signalling about messages being sent and received:
+
+* `.` - message generated
+* `+` - message sent to queue
+* `-` - message received from queue
+* `'` - message deleted (applies to Lpush/Rpop and Beanstalkd queues)
+
 ## How to run
 
 Build and run demo application (Requires Java 17+)
@@ -59,4 +66,4 @@ You can also run application in dev mode that enables live coding using:
 
 The data from table with final results from the [REPORT.md](reports/REPORT.md) can also be found in the Google Sheets:
 
-[Spreadsheet with Chart](https://docs.google.com/spreadsheets/d/1mT3EG-kFeN5FziQG_XqK9_QLeJ-c5N3Xx53N8wu4X7s)
+[Spreadsheet with a Chart](https://docs.google.com/spreadsheets/d/1mT3EG-kFeN5FziQG_XqK9_QLeJ-c5N3Xx53N8wu4X7s)
