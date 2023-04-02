@@ -31,6 +31,11 @@ object Benchmark {
             }
         }
 
+        fun errorPercentage(): Double? {
+            if (failCount == 0L) return null
+            return round(1000.0 * failCount / count) / 10.0
+        }
+
         override fun toString() = "$count ops in $duration - ${opsPerSecond()} ops/sec, $failCount fails"
     }
 

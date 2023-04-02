@@ -83,7 +83,9 @@ class Report(
             sb.append("  <tr>\n")
             sb.append("    <th>$rowKey</th>\n") // Header cell in the first column
             columnHeaders.forEach { columnHeader ->
-                sb.append("    <td>${data[rowKey]?.get(columnHeader)?.opsPerSecond()}</td>\n")
+                val ops = data[rowKey]?.get(columnHeader)?.opsPerSecond()
+                val errors = data[rowKey]?.get(columnHeader)?.errorPercentage()?.let { "<i>F$it%</i>" } ?: ""
+                sb.append("    <td>$ops $errors</td>\n")
             }
             sb.append("  </tr>\n")
         }

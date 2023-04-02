@@ -19,19 +19,19 @@ class Docker(private val r: Report) {
     enum class Service(val container: GenericContainer<*>) {
         REDIS_NOP(
             GenericContainer(DockerImageName.parse("redis:7-alpine"))
-                .withCommand("redis-server", "--appendonly", "no")
+                .withCommand("redis-server", "--save", "", "--appendonly", "no")
                 .withReuse(true)
                 .also { it.setPortBindings(listOf("6379:6379")) },
         ),
         REDIS_AOF(
             GenericContainer(DockerImageName.parse("redis:7-alpine"))
-                .withCommand("redis-server", "--appendonly", "yes")
+                .withCommand("redis-server", "--save", "", "--appendonly", "yes")
                 .withReuse(true)
                 .also { it.setPortBindings(listOf("6379:6379")) },
         ),
         REDIS_RDB(
             GenericContainer(DockerImageName.parse("redis:7-alpine"))
-                .withCommand("redis-server", "--save", "5 1000", "--save", "1 100")
+                .withCommand("redis-server", "--save", "5 1000", "--save", "1 100", "--appendonly", "no")
                 .withReuse(true)
                 .also { it.setPortBindings(listOf("6379:6379")) },
         ),

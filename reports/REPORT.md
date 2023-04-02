@@ -8,317 +8,317 @@ For each Redis persistence mode, another Redis Docker container will be started.
 
 ### Redis Pub-Sub NoP
 
-Docker container: `redis:7-alpine`, command: `[redis-server, --appendonly, no]`
+Docker container: `redis:7-alpine`, command: `[redis-server, --save, , --appendonly, no]`
 
 #### Pool size: `10`, message size: `1-2Kb`
 
-Result: `5865 ops in 10.028s - 584.9 ops/sec, 0 fails`
+Result: `6497 ops in 10.099s - 643.3 ops/sec, 0 fails`
 
 #### Pool size: `10`, message size: `10-20Kb`
 
-Result: `4828 ops in 10.042s - 480.8 ops/sec, 0 fails`
+Result: `5345 ops in 10.135s - 527.4 ops/sec, 0 fails`
 
 #### Pool size: `10`, message size: `50-100Kb`
 
-Result: `1331 ops in 10.1s - 131.8 ops/sec, 0 fails`
+Result: `1893 ops in 10.197s - 185.6 ops/sec, 0 fails`
 
 #### Pool size: `10`, message size: `500Kb-1Mb`
 
-Result: `280 ops in 10.933s - 25.6 ops/sec, 0 fails`
+Result: `326 ops in 10.345s - 31.5 ops/sec, 0 fails`
 
 #### Pool size: `50`, message size: `1-2Kb`
 
-Result: `3259 ops in 10.182s - 320.1 ops/sec, 0 fails`
+Result: `8874 ops in 10.133s - 875.8 ops/sec, 0 fails`
 
 #### Pool size: `50`, message size: `10-20Kb`
 
-Result: `2690 ops in 10.125s - 265.7 ops/sec, 0 fails`
+Result: `6182 ops in 10.091s - 612.6 ops/sec, 0 fails`
 
 #### Pool size: `50`, message size: `50-100Kb`
 
-Result: `1971 ops in 10.398s - 189.6 ops/sec, 0 fails`
+Result: `2415 ops in 10.166s - 237.6 ops/sec, 0 fails`
 
 #### Pool size: `50`, message size: `500Kb-1Mb`
 
-Result: `346 ops in 11.168s - 31.0 ops/sec, 3 fails`
+Result: `399 ops in 11.43s - 34.9 ops/sec, 5 fails`
 
 #### Pool size: `100`, message size: `1-2Kb`
 
-Result: `6966 ops in 10.236s - 680.5 ops/sec, 0 fails`
+Result: `10270 ops in 10.146s - 1012.2 ops/sec, 0 fails`
 
 #### Pool size: `100`, message size: `10-20Kb`
 
-Result: `4802 ops in 10.15s - 473.1 ops/sec, 0 fails`
+Result: `7003 ops in 10.151s - 689.9 ops/sec, 0 fails`
 
 #### Pool size: `100`, message size: `50-100Kb`
 
-Result: `1845 ops in 10.294s - 179.2 ops/sec, 0 fails`
+Result: `2432 ops in 10.405s - 233.7 ops/sec, 0 fails`
 
 #### Pool size: `100`, message size: `500Kb-1Mb`
 
-Result: `147 ops in 16.241s - 9.05 ops/sec, 268 fails`
+Result: `384 ops in 10.723s - 35.8 ops/sec, 94 fails`
 
 ### Redis Pub-Sub AOF
 
-Docker container: `redis:7-alpine`, command: `[redis-server, --appendonly, yes]`
+Docker container: `redis:7-alpine`, command: `[redis-server, --save, , --appendonly, yes]`
 
 #### Pool size: `10`, message size: `1-2Kb`
 
-Result: `5095 ops in 10.173s - 500.8 ops/sec, 0 fails`
+Result: `10334 ops in 10.088s - 1024.4 ops/sec, 0 fails`
 
 #### Pool size: `10`, message size: `10-20Kb`
 
-Result: `3709 ops in 10.167s - 364.8 ops/sec, 0 fails`
+Result: `6246 ops in 10.157s - 614.9 ops/sec, 0 fails`
 
 #### Pool size: `10`, message size: `50-100Kb`
 
-Result: `1454 ops in 10.155s - 143.2 ops/sec, 0 fails`
+Result: `2138 ops in 10.072s - 212.3 ops/sec, 0 fails`
 
 #### Pool size: `10`, message size: `500Kb-1Mb`
 
-Result: `302 ops in 10.334s - 29.2 ops/sec, 0 fails`
+Result: `390 ops in 10.32s - 37.8 ops/sec, 0 fails`
 
 #### Pool size: `50`, message size: `1-2Kb`
 
-Result: `4481 ops in 10.189s - 439.8 ops/sec, 0 fails`
+Result: `9349 ops in 10.126s - 923.3 ops/sec, 0 fails`
 
 #### Pool size: `50`, message size: `10-20Kb`
 
-Result: `2266 ops in 10.165s - 222.9 ops/sec, 0 fails`
+Result: `6492 ops in 10.043s - 646.4 ops/sec, 0 fails`
 
 #### Pool size: `50`, message size: `50-100Kb`
 
-Result: `1046 ops in 10.42s - 100.4 ops/sec, 0 fails`
+Result: `2629 ops in 10.298s - 255.3 ops/sec, 0 fails`
 
 #### Pool size: `50`, message size: `500Kb-1Mb`
 
-Result: `244 ops in 12.549s - 19.4 ops/sec, 61 fails`
+Result: `324 ops in 10.669s - 30.4 ops/sec, 1 fails`
 
 #### Pool size: `100`, message size: `1-2Kb`
 
-Result: `3482 ops in 10.155s - 342.9 ops/sec, 0 fails`
+Result: `9324 ops in 10.287s - 906.4 ops/sec, 0 fails`
 
 #### Pool size: `100`, message size: `10-20Kb`
 
-Result: `4454 ops in 10.168s - 438.0 ops/sec, 0 fails`
+Result: `6710 ops in 10.158s - 660.6 ops/sec, 0 fails`
 
 #### Pool size: `100`, message size: `50-100Kb`
 
-Result: `1761 ops in 10.371s - 169.8 ops/sec, 0 fails`
+Result: `2536 ops in 10.249s - 247.4 ops/sec, 0 fails`
 
 #### Pool size: `100`, message size: `500Kb-1Mb`
 
-Result: `272 ops in 11.926s - 22.8 ops/sec, 209 fails`
+Result: `388 ops in 10.922s - 35.5 ops/sec, 130 fails`
 
 ### Redis Pub-Sub RDB
 
-Docker container: `redis:7-alpine`, command: `[redis-server, --save, 5 1000, --save, 1 100]`
+Docker container: `redis:7-alpine`, command: `[redis-server, --save, 5 1000, --save, 1 100, --appendonly, no]`
 
 #### Pool size: `10`, message size: `1-2Kb`
 
-Result: `10295 ops in 10.076s - 1021.7 ops/sec, 0 fails`
+Result: `9921 ops in 10.031s - 989.0 ops/sec, 0 fails`
 
 #### Pool size: `10`, message size: `10-20Kb`
 
-Result: `4730 ops in 10.027s - 471.7 ops/sec, 0 fails`
+Result: `6447 ops in 10.009s - 644.1 ops/sec, 0 fails`
 
 #### Pool size: `10`, message size: `50-100Kb`
 
-Result: `1839 ops in 10.141s - 181.3 ops/sec, 0 fails`
+Result: `2158 ops in 10.122s - 213.2 ops/sec, 0 fails`
 
 #### Pool size: `10`, message size: `500Kb-1Mb`
 
-Result: `358 ops in 10.211s - 35.1 ops/sec, 0 fails`
+Result: `384 ops in 10.339s - 37.1 ops/sec, 0 fails`
 
 #### Pool size: `50`, message size: `1-2Kb`
 
-Result: `8976 ops in 10.057s - 892.5 ops/sec, 0 fails`
+Result: `9776 ops in 10.124s - 965.6 ops/sec, 0 fails`
 
 #### Pool size: `50`, message size: `10-20Kb`
 
-Result: `5767 ops in 10.2s - 565.4 ops/sec, 0 fails`
+Result: `6591 ops in 10.079s - 653.9 ops/sec, 0 fails`
 
 #### Pool size: `50`, message size: `50-100Kb`
 
-Result: `2295 ops in 10.229s - 224.4 ops/sec, 0 fails`
+Result: `2361 ops in 10.274s - 229.8 ops/sec, 0 fails`
 
 #### Pool size: `50`, message size: `500Kb-1Mb`
 
-Result: `402 ops in 11.487s - 35.0 ops/sec, 2 fails`
+Result: `436 ops in 11.759s - 37.1 ops/sec, 0 fails`
 
 #### Pool size: `100`, message size: `1-2Kb`
 
-Result: `10706 ops in 10.032s - 1067.2 ops/sec, 0 fails`
+Result: `10360 ops in 10.029s - 1033.0 ops/sec, 0 fails`
 
 #### Pool size: `100`, message size: `10-20Kb`
 
-Result: `7161 ops in 10.127s - 707.1 ops/sec, 0 fails`
+Result: `7032 ops in 10.126s - 694.4 ops/sec, 0 fails`
 
 #### Pool size: `100`, message size: `50-100Kb`
 
-Result: `2419 ops in 10.356s - 233.6 ops/sec, 0 fails`
+Result: `2326 ops in 10.485s - 221.8 ops/sec, 0 fails`
 
 #### Pool size: `100`, message size: `500Kb-1Mb`
 
-Result: `405 ops in 11.548s - 35.1 ops/sec, 164 fails`
+Result: `421 ops in 11.922s - 35.3 ops/sec, 74 fails`
 
 ## Redis Rpush-Lpop in different persistence modes
 
 ### Redis Rpush-Lpop NoP
 
-Docker container: `redis:7-alpine`, command: `[redis-server, --appendonly, no]`
+Docker container: `redis:7-alpine`, command: `[redis-server, --save, , --appendonly, no]`
 
 #### Pool size: `10`, message size: `1-2Kb`
 
-Result: `8459 ops in 11.529s - 733.7 ops/sec, 0 fails`
+Result: `8901 ops in 11.786s - 755.2 ops/sec, 0 fails`
 
 #### Pool size: `10`, message size: `10-20Kb`
 
-Result: `4328 ops in 11.832s - 365.8 ops/sec, 0 fails`
+Result: `4957 ops in 11.296s - 438.8 ops/sec, 0 fails`
 
 #### Pool size: `10`, message size: `50-100Kb`
 
-Result: `1409 ops in 11.785s - 119.6 ops/sec, 0 fails`
+Result: `1551 ops in 11.169s - 138.9 ops/sec, 0 fails`
 
 #### Pool size: `10`, message size: `500Kb-1Mb`
 
-Result: `259 ops in 11.884s - 21.8 ops/sec, 0 fails`
+Result: `253 ops in 11.472s - 22.1 ops/sec, 0 fails`
 
 #### Pool size: `50`, message size: `1-2Kb`
 
-Result: `8896 ops in 14.42s - 616.9 ops/sec, 0 fails`
+Result: `8693 ops in 13.313s - 653.0 ops/sec, 0 fails`
 
 #### Pool size: `50`, message size: `10-20Kb`
 
-Result: `5573 ops in 14.304s - 389.6 ops/sec, 0 fails`
+Result: `5257 ops in 13.483s - 389.9 ops/sec, 0 fails`
 
 #### Pool size: `50`, message size: `50-100Kb`
 
-Result: `1771 ops in 13.342s - 132.7 ops/sec, 0 fails`
+Result: `1869 ops in 13.126s - 142.4 ops/sec, 0 fails`
 
 #### Pool size: `50`, message size: `500Kb-1Mb`
 
-Result: `353 ops in 16.542s - 21.3 ops/sec, 0 fails`
+Result: `359 ops in 15.964s - 22.5 ops/sec, 0 fails`
 
 #### Pool size: `100`, message size: `1-2Kb`
 
-Result: `8035 ops in 14.606s - 550.1 ops/sec, 0 fails`
+Result: `9345 ops in 14.911s - 626.7 ops/sec, 0 fails`
 
 #### Pool size: `100`, message size: `10-20Kb`
 
-Result: `5080 ops in 14.702s - 345.5 ops/sec, 0 fails`
+Result: `5773 ops in 14.52s - 397.6 ops/sec, 0 fails`
 
 #### Pool size: `100`, message size: `50-100Kb`
 
-Result: `1728 ops in 14.442s - 119.7 ops/sec, 0 fails`
+Result: `2054 ops in 14.678s - 139.9 ops/sec, 0 fails`
 
 #### Pool size: `100`, message size: `500Kb-1Mb`
 
-Result: `405 ops in 17.78s - 22.8 ops/sec, 54 fails`
+Result: `438 ops in 1m 12.069s - 6.08 ops/sec, 63 fails`
 
 ### Redis Rpush-Lpop AOF
 
-Docker container: `redis:7-alpine`, command: `[redis-server, --appendonly, yes]`
+Docker container: `redis:7-alpine`, command: `[redis-server, --save, , --appendonly, yes]`
 
 #### Pool size: `10`, message size: `1-2Kb`
 
-Result: `8472 ops in 11.724s - 722.6 ops/sec, 0 fails`
+Result: `8455 ops in 11.409s - 741.1 ops/sec, 0 fails`
 
 #### Pool size: `10`, message size: `10-20Kb`
 
-Result: `3641 ops in 12.57s - 289.7 ops/sec, 0 fails`
+Result: `4503 ops in 11.489s - 391.9 ops/sec, 0 fails`
 
 #### Pool size: `10`, message size: `50-100Kb`
 
-Result: `1213 ops in 11.963s - 101.4 ops/sec, 0 fails`
+Result: `1346 ops in 11.377s - 118.3 ops/sec, 0 fails`
 
 #### Pool size: `10`, message size: `500Kb-1Mb`
 
-Result: `228 ops in 11.57s - 19.7 ops/sec, 0 fails`
+Result: `221 ops in 11.378s - 19.4 ops/sec, 0 fails`
 
 #### Pool size: `50`, message size: `1-2Kb`
 
-Result: `12206 ops in 12.837s - 950.8 ops/sec, 0 fails`
+Result: `8991 ops in 13.952s - 644.4 ops/sec, 0 fails`
 
 #### Pool size: `50`, message size: `10-20Kb`
 
-Result: `8799 ops in 13.128s - 670.2 ops/sec, 0 fails`
+Result: `5208 ops in 13.62s - 382.4 ops/sec, 0 fails`
 
 #### Pool size: `50`, message size: `50-100Kb`
 
-Result: `2427 ops in 12.531s - 193.7 ops/sec, 0 fails`
+Result: `1620 ops in 13.699s - 118.3 ops/sec, 0 fails`
 
 #### Pool size: `50`, message size: `500Kb-1Mb`
 
-Result: `368 ops in 15.09s - 24.4 ops/sec, 0 fails`
+Result: `342 ops in 18.613s - 18.4 ops/sec, 0 fails`
 
 #### Pool size: `100`, message size: `1-2Kb`
 
-Result: `8299 ops in 13.94s - 595.3 ops/sec, 0 fails`
+Result: `9791 ops in 14.678s - 667.1 ops/sec, 0 fails`
 
 #### Pool size: `100`, message size: `10-20Kb`
 
-Result: `5063 ops in 14.073s - 359.8 ops/sec, 0 fails`
+Result: `4546 ops in 13.902s - 327.0 ops/sec, 0 fails`
 
 #### Pool size: `100`, message size: `50-100Kb`
 
-Result: `1550 ops in 14.341s - 108.1 ops/sec, 0 fails`
+Result: `1733 ops in 14.804s - 117.1 ops/sec, 0 fails`
 
 #### Pool size: `100`, message size: `500Kb-1Mb`
 
-Result: `346 ops in 17.501s - 19.8 ops/sec, 44 fails`
+Result: `299 ops in 15.894s - 18.8 ops/sec, 74 fails`
 
 ### Redis Rpush-Lpop RDB
 
-Docker container: `redis:7-alpine`, command: `[redis-server, --save, 5 1000, --save, 1 100]`
+Docker container: `redis:7-alpine`, command: `[redis-server, --save, 5 1000, --save, 1 100, --appendonly, no]`
 
 #### Pool size: `10`, message size: `1-2Kb`
 
-Result: `7767 ops in 12.524s - 620.2 ops/sec, 0 fails`
+Result: `8077 ops in 12.147s - 664.9 ops/sec, 0 fails`
 
 #### Pool size: `10`, message size: `10-20Kb`
 
-Result: `4154 ops in 11.69s - 355.3 ops/sec, 0 fails`
+Result: `5030 ops in 11.54s - 435.9 ops/sec, 0 fails`
 
 #### Pool size: `10`, message size: `50-100Kb`
 
-Result: `1283 ops in 11.536s - 111.2 ops/sec, 0 fails`
+Result: `1524 ops in 11.122s - 137.0 ops/sec, 0 fails`
 
 #### Pool size: `10`, message size: `500Kb-1Mb`
 
-Result: `248 ops in 12.181s - 20.4 ops/sec, 0 fails`
+Result: `237 ops in 11.461s - 20.7 ops/sec, 0 fails`
 
 #### Pool size: `50`, message size: `1-2Kb`
 
-Result: `8263 ops in 13.782s - 599.6 ops/sec, 0 fails`
+Result: `9676 ops in 13.51s - 716.2 ops/sec, 0 fails`
 
 #### Pool size: `50`, message size: `10-20Kb`
 
-Result: `4944 ops in 13.443s - 367.8 ops/sec, 0 fails`
+Result: `5405 ops in 13.473s - 401.2 ops/sec, 0 fails`
 
 #### Pool size: `50`, message size: `50-100Kb`
 
-Result: `1744 ops in 13.876s - 125.7 ops/sec, 0 fails`
+Result: `1785 ops in 13.819s - 129.2 ops/sec, 0 fails`
 
 #### Pool size: `50`, message size: `500Kb-1Mb`
 
-Result: `297 ops in 14.428s - 20.6 ops/sec, 0 fails`
+Result: `352 ops in 16.382s - 21.5 ops/sec, 0 fails`
 
 #### Pool size: `100`, message size: `1-2Kb`
 
-Result: `10505 ops in 15.379s - 683.1 ops/sec, 0 fails`
+Result: `9470 ops in 14.977s - 632.3 ops/sec, 0 fails`
 
 #### Pool size: `100`, message size: `10-20Kb`
 
-Result: `6358 ops in 12.659s - 502.3 ops/sec, 0 fails`
+Result: `5762 ops in 14.796s - 389.4 ops/sec, 0 fails`
 
 #### Pool size: `100`, message size: `50-100Kb`
 
-Result: `2653 ops in 14.506s - 182.9 ops/sec, 0 fails`
+Result: `1840 ops in 14.398s - 127.8 ops/sec, 0 fails`
 
 #### Pool size: `100`, message size: `500Kb-1Mb`
 
-Result: `315 ops in 14.019s - 22.5 ops/sec, 100 fails`
+Result: `402 ops in 19.232s - 20.9 ops/sec, 150 fails`
 
 ## BeansTalk without persistence, with immediate flush, and with 1s flush interval
 
@@ -328,51 +328,51 @@ Docker container: `uretgec/beanstalkd-alpine:latest`, command: `[-F, -z, 1048576
 
 #### Pool size: `10`, message size: `1-2Kb`
 
-Result: `17021 ops in 13.673s - 1244.9 ops/sec, 0 fails`
+Result: `10984 ops in 14.29s - 768.6 ops/sec, 0 fails`
 
 #### Pool size: `10`, message size: `10-20Kb`
 
-Result: `8471 ops in 12.609s - 671.8 ops/sec, 0 fails`
+Result: `7399 ops in 13.554s - 545.9 ops/sec, 0 fails`
 
 #### Pool size: `10`, message size: `50-100Kb`
 
-Result: `2126 ops in 12.013s - 177.0 ops/sec, 0 fails`
+Result: `2498 ops in 12.272s - 203.6 ops/sec, 0 fails`
 
 #### Pool size: `10`, message size: `500Kb-1Mb`
 
-Result: `294 ops in 12.708s - 23.1 ops/sec, 0 fails`
+Result: `402 ops in 11.734s - 34.3 ops/sec, 0 fails`
 
 #### Pool size: `50`, message size: `1-2Kb`
 
-Result: `24337 ops in 13.133s - 1853.1 ops/sec, 0 fails`
+Result: `23639 ops in 13.849s - 1706.9 ops/sec, 0 fails`
 
 #### Pool size: `50`, message size: `10-20Kb`
 
-Result: `15942 ops in 13.101s - 1216.9 ops/sec, 0 fails`
+Result: `11912 ops in 14.336s - 830.9 ops/sec, 0 fails`
 
 #### Pool size: `50`, message size: `50-100Kb`
 
-Result: `4287 ops in 12.246s - 350.1 ops/sec, 0 fails`
+Result: `3468 ops in 12.448s - 278.6 ops/sec, 0 fails`
 
 #### Pool size: `50`, message size: `500Kb-1Mb`
 
-Result: `417 ops in 11.171s - 37.3 ops/sec, 0 fails`
+Result: `441 ops in 12.407s - 35.5 ops/sec, 0 fails`
 
 #### Pool size: `100`, message size: `1-2Kb`
 
-Result: `24331 ops in 13.453s - 1808.6 ops/sec, 0 fails`
+Result: `29580 ops in 13.547s - 2183.5 ops/sec, 0 fails`
 
 #### Pool size: `100`, message size: `10-20Kb`
 
-Result: `10647 ops in 13.907s - 765.6 ops/sec, 0 fails`
+Result: `13220 ops in 14.589s - 906.2 ops/sec, 0 fails`
 
 #### Pool size: `100`, message size: `50-100Kb`
 
-Result: `2716 ops in 12.11s - 224.3 ops/sec, 0 fails`
+Result: `3604 ops in 12.686s - 284.1 ops/sec, 0 fails`
 
 #### Pool size: `100`, message size: `500Kb-1Mb`
 
-Result: `528 ops in 16.522s - 32.0 ops/sec, 19 fails`
+Result: `525 ops in 16.327s - 32.2 ops/sec, 18 fails`
 
 ### Beanstalk 0s
 
@@ -380,51 +380,51 @@ Docker container: `uretgec/beanstalkd-alpine:latest`, command: `[-b, /data, -f, 
 
 #### Pool size: `10`, message size: `1-2Kb`
 
-Result: `1991 ops in 12.016s - 165.7 ops/sec, 0 fails`
+Result: `2120 ops in 11.792s - 179.8 ops/sec, 0 fails`
 
 #### Pool size: `10`, message size: `10-20Kb`
 
-Result: `1606 ops in 12.034s - 133.5 ops/sec, 0 fails`
+Result: `1981 ops in 11.687s - 169.5 ops/sec, 0 fails`
 
 #### Pool size: `10`, message size: `50-100Kb`
 
-Result: `1209 ops in 12.341s - 98.0 ops/sec, 0 fails`
+Result: `1338 ops in 11.723s - 114.1 ops/sec, 0 fails`
 
 #### Pool size: `10`, message size: `500Kb-1Mb`
 
-Result: `319 ops in 11.542s - 27.6 ops/sec, 0 fails`
+Result: `329 ops in 11.551s - 28.5 ops/sec, 0 fails`
 
 #### Pool size: `50`, message size: `1-2Kb`
 
-Result: `2663 ops in 12.504s - 213.0 ops/sec, 0 fails`
+Result: `2640 ops in 12.891s - 204.8 ops/sec, 0 fails`
 
 #### Pool size: `50`, message size: `10-20Kb`
 
-Result: `2051 ops in 12.12s - 169.2 ops/sec, 0 fails`
+Result: `2200 ops in 12.354s - 178.1 ops/sec, 0 fails`
 
 #### Pool size: `50`, message size: `50-100Kb`
 
-Result: `1768 ops in 13.228s - 133.7 ops/sec, 0 fails`
+Result: `1881 ops in 12.741s - 147.6 ops/sec, 0 fails`
 
 #### Pool size: `50`, message size: `500Kb-1Mb`
 
-Result: `363 ops in 13.264s - 27.4 ops/sec, 0 fails`
+Result: `431 ops in 13.571s - 31.8 ops/sec, 0 fails`
 
 #### Pool size: `100`, message size: `1-2Kb`
 
-Result: `3203 ops in 14.519s - 220.6 ops/sec, 0 fails`
+Result: `4336 ops in 14.773s - 293.5 ops/sec, 0 fails`
 
 #### Pool size: `100`, message size: `10-20Kb`
 
-Result: `2444 ops in 12.595s - 194.0 ops/sec, 0 fails`
+Result: `3106 ops in 14.282s - 217.5 ops/sec, 0 fails`
 
 #### Pool size: `100`, message size: `50-100Kb`
 
-Result: `1804 ops in 13.332s - 135.3 ops/sec, 0 fails`
+Result: `161 ops in 28m 48.227s - 0.093 ops/sec, 0 fails`
 
 #### Pool size: `100`, message size: `500Kb-1Mb`
 
-Result: `519 ops in 19.829s - 26.2 ops/sec, 13 fails`
+Result: `349 ops in 14.636s - 23.8 ops/sec, 13 fails`
 
 ### Beanstalk 1s
 
@@ -432,51 +432,51 @@ Docker container: `uretgec/beanstalkd-alpine:latest`, command: `[-b, /data, -f, 
 
 #### Pool size: `10`, message size: `1-2Kb`
 
-Result: `10761 ops in 14.574s - 738.4 ops/sec, 0 fails`
+Result: `9407 ops in 14.074s - 668.4 ops/sec, 0 fails`
 
 #### Pool size: `10`, message size: `10-20Kb`
 
-Result: `5989 ops in 13.862s - 432.0 ops/sec, 0 fails`
+Result: `5839 ops in 12.381s - 471.6 ops/sec, 0 fails`
 
 #### Pool size: `10`, message size: `50-100Kb`
 
-Result: `2035 ops in 12.361s - 164.6 ops/sec, 0 fails`
+Result: `2234 ops in 12.738s - 175.4 ops/sec, 0 fails`
 
 #### Pool size: `10`, message size: `500Kb-1Mb`
 
-Result: `242 ops in 11.217s - 21.6 ops/sec, 0 fails`
+Result: `342 ops in 11.524s - 29.7 ops/sec, 0 fails`
 
 #### Pool size: `50`, message size: `1-2Kb`
 
-Result: `10765 ops in 12.985s - 829.0 ops/sec, 0 fails`
+Result: `22362 ops in 13.348s - 1675.3 ops/sec, 0 fails`
 
 #### Pool size: `50`, message size: `10-20Kb`
 
-Result: `10478 ops in 13.446s - 779.3 ops/sec, 0 fails`
+Result: `9863 ops in 13.233s - 745.3 ops/sec, 0 fails`
 
 #### Pool size: `50`, message size: `50-100Kb`
 
-Result: `2798 ops in 11.918s - 234.8 ops/sec, 0 fails`
+Result: `3221 ops in 12.196s - 264.1 ops/sec, 0 fails`
 
 #### Pool size: `50`, message size: `500Kb-1Mb`
 
-Result: `512 ops in 13.566s - 37.7 ops/sec, 0 fails`
+Result: `435 ops in 13.667s - 31.8 ops/sec, 0 fails`
 
 #### Pool size: `100`, message size: `1-2Kb`
 
-Result: `22206 ops in 13.242s - 1676.9 ops/sec, 0 fails`
+Result: `21160 ops in 12.621s - 1676.6 ops/sec, 0 fails`
 
 #### Pool size: `100`, message size: `10-20Kb`
 
-Result: `9391 ops in 12.957s - 724.8 ops/sec, 0 fails`
+Result: `11441 ops in 13.386s - 854.7 ops/sec, 0 fails`
 
 #### Pool size: `100`, message size: `50-100Kb`
 
-Result: `3353 ops in 13.183s - 254.3 ops/sec, 5 fails`
+Result: `3170 ops in 12.658s - 250.4 ops/sec, 4 fails`
 
 #### Pool size: `100`, message size: `500Kb-1Mb`
 
-Result: `560 ops in 18.252s - 30.7 ops/sec, 25 fails`
+Result: `648 ops in 21.537s - 30.1 ops/sec, 21 fails`
 
 <table>
   <tr>
@@ -493,146 +493,146 @@ Result: `560 ops in 18.252s - 30.7 ops/sec, 25 fails`
   </tr>
   <tr>
     <th>Pool: 10, payload: 1-2Kb</th>
-    <td>584.9</td>
-    <td>500.8</td>
-    <td>1021.7</td>
-    <td>733.7</td>
-    <td>722.6</td>
-    <td>620.2</td>
-    <td>1244.9</td>
-    <td>165.7</td>
-    <td>738.4</td>
+    <td>643.3 </td>
+    <td>1024.4 </td>
+    <td>989.0 </td>
+    <td>755.2 </td>
+    <td>741.1 </td>
+    <td>664.9 </td>
+    <td>768.6 </td>
+    <td>179.8 </td>
+    <td>668.4 </td>
   </tr>
   <tr>
     <th>Pool: 10, payload: 10-20Kb</th>
-    <td>480.8</td>
-    <td>364.8</td>
-    <td>471.7</td>
-    <td>365.8</td>
-    <td>289.7</td>
-    <td>355.3</td>
-    <td>671.8</td>
-    <td>133.5</td>
-    <td>432.0</td>
+    <td>527.4 </td>
+    <td>614.9 </td>
+    <td>644.1 </td>
+    <td>438.8 </td>
+    <td>391.9 </td>
+    <td>435.9 </td>
+    <td>545.9 </td>
+    <td>169.5 </td>
+    <td>471.6 </td>
   </tr>
   <tr>
     <th>Pool: 10, payload: 50-100Kb</th>
-    <td>131.8</td>
-    <td>143.2</td>
-    <td>181.3</td>
-    <td>119.6</td>
-    <td>101.4</td>
-    <td>111.2</td>
-    <td>177.0</td>
-    <td>98.0</td>
-    <td>164.6</td>
+    <td>185.6 </td>
+    <td>212.3 </td>
+    <td>213.2 </td>
+    <td>138.9 </td>
+    <td>118.3 </td>
+    <td>137.0 </td>
+    <td>203.6 </td>
+    <td>114.1 </td>
+    <td>175.4 </td>
   </tr>
   <tr>
     <th>Pool: 10, payload: 500Kb-1Mb</th>
-    <td>25.6</td>
-    <td>29.2</td>
-    <td>35.1</td>
-    <td>21.8</td>
-    <td>19.7</td>
-    <td>20.4</td>
-    <td>23.1</td>
-    <td>27.6</td>
-    <td>21.6</td>
+    <td>31.5 </td>
+    <td>37.8 </td>
+    <td>37.1 </td>
+    <td>22.1 </td>
+    <td>19.4 </td>
+    <td>20.7 </td>
+    <td>34.3 </td>
+    <td>28.5 </td>
+    <td>29.7 </td>
   </tr>
   <tr>
     <th>Pool: 50, payload: 1-2Kb</th>
-    <td>320.1</td>
-    <td>439.8</td>
-    <td>892.5</td>
-    <td>616.9</td>
-    <td>950.8</td>
-    <td>599.6</td>
-    <td>1853.1</td>
-    <td>213.0</td>
-    <td>829.0</td>
+    <td>875.8 </td>
+    <td>923.3 </td>
+    <td>965.6 </td>
+    <td>653.0 </td>
+    <td>644.4 </td>
+    <td>716.2 </td>
+    <td>1706.9 </td>
+    <td>204.8 </td>
+    <td>1675.3 </td>
   </tr>
   <tr>
     <th>Pool: 50, payload: 10-20Kb</th>
-    <td>265.7</td>
-    <td>222.9</td>
-    <td>565.4</td>
-    <td>389.6</td>
-    <td>670.2</td>
-    <td>367.8</td>
-    <td>1216.9</td>
-    <td>169.2</td>
-    <td>779.3</td>
+    <td>612.6 </td>
+    <td>646.4 </td>
+    <td>653.9 </td>
+    <td>389.9 </td>
+    <td>382.4 </td>
+    <td>401.2 </td>
+    <td>830.9 </td>
+    <td>178.1 </td>
+    <td>745.3 </td>
   </tr>
   <tr>
     <th>Pool: 50, payload: 50-100Kb</th>
-    <td>189.6</td>
-    <td>100.4</td>
-    <td>224.4</td>
-    <td>132.7</td>
-    <td>193.7</td>
-    <td>125.7</td>
-    <td>350.1</td>
-    <td>133.7</td>
-    <td>234.8</td>
+    <td>237.6 </td>
+    <td>255.3 </td>
+    <td>229.8 </td>
+    <td>142.4 </td>
+    <td>118.3 </td>
+    <td>129.2 </td>
+    <td>278.6 </td>
+    <td>147.6 </td>
+    <td>264.1 </td>
   </tr>
   <tr>
     <th>Pool: 50, payload: 500Kb-1Mb</th>
-    <td>31.0</td>
-    <td>19.4</td>
-    <td>35.0</td>
-    <td>21.3</td>
-    <td>24.4</td>
-    <td>20.6</td>
-    <td>37.3</td>
-    <td>27.4</td>
-    <td>37.7</td>
+    <td>34.9 <i>F1.3%</i></td>
+    <td>30.4 <i>F0.3%</i></td>
+    <td>37.1 </td>
+    <td>22.5 </td>
+    <td>18.4 </td>
+    <td>21.5 </td>
+    <td>35.5 </td>
+    <td>31.8 </td>
+    <td>31.8 </td>
   </tr>
   <tr>
     <th>Pool: 100, payload: 1-2Kb</th>
-    <td>680.5</td>
-    <td>342.9</td>
-    <td>1067.2</td>
-    <td>550.1</td>
-    <td>595.3</td>
-    <td>683.1</td>
-    <td>1808.6</td>
-    <td>220.6</td>
-    <td>1676.9</td>
+    <td>1012.2 </td>
+    <td>906.4 </td>
+    <td>1033.0 </td>
+    <td>626.7 </td>
+    <td>667.1 </td>
+    <td>632.3 </td>
+    <td>2183.5 </td>
+    <td>293.5 </td>
+    <td>1676.6 </td>
   </tr>
   <tr>
     <th>Pool: 100, payload: 10-20Kb</th>
-    <td>473.1</td>
-    <td>438.0</td>
-    <td>707.1</td>
-    <td>345.5</td>
-    <td>359.8</td>
-    <td>502.3</td>
-    <td>765.6</td>
-    <td>194.0</td>
-    <td>724.8</td>
+    <td>689.9 </td>
+    <td>660.6 </td>
+    <td>694.4 </td>
+    <td>397.6 </td>
+    <td>327.0 </td>
+    <td>389.4 </td>
+    <td>906.2 </td>
+    <td>217.5 </td>
+    <td>854.7 </td>
   </tr>
   <tr>
     <th>Pool: 100, payload: 50-100Kb</th>
-    <td>179.2</td>
-    <td>169.8</td>
-    <td>233.6</td>
-    <td>119.7</td>
-    <td>108.1</td>
-    <td>182.9</td>
-    <td>224.3</td>
-    <td>135.3</td>
-    <td>254.3</td>
+    <td>233.7 </td>
+    <td>247.4 </td>
+    <td>221.8 </td>
+    <td>139.9 </td>
+    <td>117.1 </td>
+    <td>127.8 </td>
+    <td>284.1 </td>
+    <td>0.093 </td>
+    <td>250.4 <i>F0.1%</i></td>
   </tr>
   <tr>
     <th>Pool: 100, payload: 500Kb-1Mb</th>
-    <td>9.05</td>
-    <td>22.8</td>
-    <td>35.1</td>
-    <td>22.8</td>
-    <td>19.8</td>
-    <td>22.5</td>
-    <td>32.0</td>
-    <td>26.2</td>
-    <td>30.7</td>
+    <td>35.8 <i>F24.5%</i></td>
+    <td>35.5 <i>F33.5%</i></td>
+    <td>35.3 <i>F17.6%</i></td>
+    <td>6.08 <i>F14.4%</i></td>
+    <td>18.8 <i>F24.7%</i></td>
+    <td>20.9 <i>F37.3%</i></td>
+    <td>32.2 <i>F3.4%</i></td>
+    <td>23.8 <i>F3.7%</i></td>
+    <td>30.1 <i>F3.2%</i></td>
   </tr>
 </table>
