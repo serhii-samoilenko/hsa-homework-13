@@ -32,8 +32,8 @@ fun runDemo() {
         "500Kb-1Mb" to (1024 * 500..1024 * 1024),
 //        "5-10Mb" to (1024 * 1024 * 5..1024 * 1024 * 10),
     )
-    val runDuration = 10.seconds
-    val cooldownDuration = 5.seconds
+    val runDuration = 120.seconds
+    val cooldownDuration = 15.seconds
     val results = LinkedHashMap<String, LinkedHashMap<String, Result>>()
     r.text("For each Redis persistence mode, another Redis Docker container will be started.")
     r.line()

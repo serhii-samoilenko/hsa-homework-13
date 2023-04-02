@@ -1,69 +1,62 @@
-# hsa13
+# Highload Software Architecture 8 Lesson 13 Homework
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Queues: Redis vs Beanstalkd
+---
 
-If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
+## Test project setup
 
-## Running the application in dev mode
+The demo is written in Kotlin/Quarkus and uses testcontainers to launch docker containers in various modes.
 
-You can run your application in dev mode that enables live coding using:
+The [`com/example/Demo.kt/runDemo`](src/main/kotlin/com/example/Demo.kt) runs different queues with different load and writes a report in a Markdown format. The run report is located in the [REPORT.md](reports/REPORT.md) file.
+
+### Queue configurations and load profiles
+
+This demo applies load to 6 queue configurations (see [Docker.kt](src/main/kotlin/com/example/util/Docker.kt)):
+
+* Redis NoP - Redis Pub-Sub queue with no persistence, `--save "" --appendonly no`
+* Redis AOF - Redis Pub-Sub queue with AOF persistence, `--save "" --appendonly yes`
+* Redis RDB - Redis Pub-Sub queue with RDB persistence, `--save "5 1000" --save "1 100" --appendonly no`
+* Beanstalk NoP - Beanstalkd queue with no persistence, `-F`
+* Beanstalk 0s - Beanstalkd queue with immediate save to file, `-f 0`
+* Beanstalk 1s - Beanstalkd queue with save every second, `-f 1`
+
+Redis is tested with Pub-Sub and Lpush/Rpop queues.
+
+Queues are tested with different number of concurrent producers and consumers:
+
+* 10 producers % consumers
+* 50 producers & consumers
+* 100 producers & consumers
+
+Producer emits as many messages as possible during 2 minutes, then consumer consumes all messages. Resulting time is used to calculate throughput in Operations per second.
+
+Tests also use different message sizes:
+
+* 1-2Kb
+* 10-20Kb
+* 50-100Kb
+* 500Kb-1Mb
+
+All queues run with default settings, so timeouts sometimes happen on large concurrency levels and large message sizes.
+These timeouts are also reported in the report as a percentage of total operations. 
+
+## How to run
+
+Build and run demo application (Requires Java 17+)
+
+```shell script
+./gradlew build && \
+java -jar build/quarkus-app/quarkus-run.jar
+```
+
+You can also run application in dev mode that enables live coding using:
 
 ```shell script
 ./gradlew quarkusDev
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev/.
+## Final results
 
-## Packaging and running the application
+The data from table with final results from the [REPORT.md](reports/REPORT.md) can also be found in the Google Sheets:
 
-The application can be packaged using:
-
-```shell script
-./gradlew build
-```
-
-It produces the `quarkus-run.jar` file in the `build/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `build/quarkus-app/lib/` directory.
-
-The application is now runnable using `java -jar build/quarkus-app/quarkus-run.jar`.
-
-If you want to build an _über-jar_, execute the following command:
-
-```shell script
-./gradlew build -Dquarkus.package.type=uber-jar
-```
-
-The application, packaged as an _über-jar_, is now runnable using `java -jar build/*-runner.jar`.
-
-## Creating a native executable
-
-You can create a native executable using:
-
-```shell script
-./gradlew build -Dquarkus.package.type=native
-```
-
-Or, if you don't have GraalVM installed, you can run the native executable build in a service using:
-
-```shell script
-./gradlew build -Dquarkus.package.type=native -Dquarkus.native.service-build=true
-```
-
-You can then execute your native executable with: `./build/hsa13-1.0-SNAPSHOT-runner`
-
-If you want to learn more about building native executables, please consult https://quarkus.io/guides/gradle-tooling.
-
-## Related Guides
-
-- YAML Configuration ([guide](https://quarkus.io/guides/config#yaml)): Use YAML to configure your Quarkus application
-- Kotlin ([guide](https://quarkus.io/guides/kotlin)): Write your services in Kotlin
-
-## Provided Code
-
-### YAML Config
-
-Configure your application with YAML
-
-[Related guide section...](https://quarkus.io/guides/config-reference#configuration-examples)
-
-The Quarkus application configuration is located in `src/main/resources/application.yml`.
+[Spreadsheet with Chart](https://docs.google.com/spreadsheets/d/1mT3EG-kFeN5FziQG_XqK9_QLeJ-c5N3Xx53N8wu4X7s)
