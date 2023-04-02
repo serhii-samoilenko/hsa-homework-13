@@ -2,10 +2,10 @@ package com.example.client
 
 import com.dinstone.beanstalkc.BeanstalkClientFactory
 import com.dinstone.beanstalkc.Configuration
+import com.example.util.MetricsCounter
 import java.io.Closeable
-import java.util.concurrent.atomic.AtomicLong
 
-class BeanstalkClient(private val poolSize: Int) : Closeable {
+class BeanstalkClient(private val poolSize: Int, private val counter: MetricsCounter) : Closeable {
     private val config = Configuration().also {
         it.serviceHost = "127.0.0.1"
         it.servicePort = 11300
@@ -25,25 +25,16 @@ class BeanstalkClient(private val poolSize: Int) : Closeable {
         .map { factory.createJobConsumer(it) }
         .toCircularIterator()
 
-    private val pushes = AtomicLong(0)
-    private val pops = AtomicLong(0)
-
-    fun getPushesCount() = pushes.get()
-    fun getPopsCount() = pops.get()
-
     fun push(message: ByteArray) {
-        val job = nextProducer().putJob(0, 0, 60 * 10, message)
-        job.inc()
-        pushes.incrementAndGet()
-        print('+')
+        nextProducer().putJob(0, 0, 60 * 10, message)
+        counter.recordPush()
     }
 
-    fun pop() {
+    fun pull() {
         val consumer = nextConsumer()
         val job = consumer.reserveJob(1)
         if (job != null) {
-            pops.incrementAndGet()
-            print('-')
+            counter.recordPull()
             consumer.deleteJob(job.id)
             print('\'')
         }

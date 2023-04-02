@@ -5,9 +5,7 @@ import com.example.util.Benchmark.benchmarkBeanstalk
 import com.example.util.Benchmark.benchmarkPubSub
 import com.example.util.Benchmark.benchmarkRpushLpop
 import com.example.util.Docker
-import com.example.util.Helper
 import com.example.util.Report
-import javax.enterprise.context.ApplicationScoped
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
@@ -16,7 +14,7 @@ import kotlin.time.Duration.Companion.seconds
  *
  * This demo will compare performance of Redis and Beanstalkd queues in different configurations.
  */
-fun runDemo(helper: Helper) = with(helper) {
+fun runDemo() {
     val r = Report("REPORT.md")
     r.h1("Queues demo demo report")
 
@@ -24,18 +22,18 @@ fun runDemo(helper: Helper) = with(helper) {
     val poolSizes = listOf(
 //        1,
         10,
-//        80,
-//        500,
+        50,
+        100,
     )
     val messageSizes = listOf(
-//        "1-2Kb" to (1024..1024 * 2),
-//        "10-20Kb" to (1024 * 10..1024 * 20),
-//        "50-100Kb" to (1024 * 50..1024 * 100),
+        "1-2Kb" to (1024..1024 * 2),
+        "10-20Kb" to (1024 * 10..1024 * 20),
+        "50-100Kb" to (1024 * 50..1024 * 100),
         "500Kb-1Mb" to (1024 * 500..1024 * 1024),
 //        "5-10Mb" to (1024 * 1024 * 5..1024 * 1024 * 10),
     )
-    val runDuration = 5.seconds
-    val cooldownDuration = 3.seconds
+    val runDuration = 10.seconds
+    val cooldownDuration = 5.seconds
     val results = LinkedHashMap<String, LinkedHashMap<String, Result>>()
     r.text("For each Redis persistence mode, another Redis Docker container will be started.")
     r.line()
@@ -73,9 +71,9 @@ fun runDemo(helper: Helper) = with(helper) {
         "Redis Pub-Sub AOF" to Docker.Service.REDIS_AOF,
         "Redis Pub-Sub RDB" to Docker.Service.REDIS_RDB,
     )
-//    runBenchmarks(redisPubSubContainers, poolSizes, messageSizes) { duration, poolSize, messageSize ->
-//        benchmarkPubSub(duration, poolSize, messageSize)
-//    }
+    runBenchmarks(redisPubSubContainers, poolSizes, messageSizes) { duration, poolSize, messageSize ->
+        benchmarkPubSub(duration, poolSize, messageSize)
+    }
 
     r.h2("Redis Rpush-Lpop in different persistence modes")
     val redisRpushLpopContainers = listOf(
@@ -83,9 +81,9 @@ fun runDemo(helper: Helper) = with(helper) {
         "Redis Rpush-Lpop AOF" to Docker.Service.REDIS_AOF,
         "Redis Rpush-Lpop RDB" to Docker.Service.REDIS_RDB,
     )
-//    runBenchmarks(redisRpushLpopContainers, poolSizes, messageSizes) { duration, poolSize, messageSize ->
-//        benchmarkRpushLpop(duration, poolSize, messageSize)
-//    }
+    runBenchmarks(redisRpushLpopContainers, poolSizes, messageSizes) { duration, poolSize, messageSize ->
+        benchmarkRpushLpop(duration, poolSize, messageSize)
+    }
 
     r.h2("BeansTalk without persistence, with immediate flush, and with 1s flush interval")
     val beanstalkdContainers = listOf(
@@ -100,11 +98,4 @@ fun runDemo(helper: Helper) = with(helper) {
     r.htmlTable("Ops/sec", results)
 
     r.writeToFile()
-}
-
-@ApplicationScoped
-class Demo(private val helper: Helper) {
-    fun start() {
-        runDemo(helper)
-    }
 }

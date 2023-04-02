@@ -1,13 +1,13 @@
 package com.example.client
 
+import com.example.util.MetricsCounter
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPoolConfig
 import redis.clients.jedis.args.ListDirection.LEFT
 import redis.clients.jedis.args.ListDirection.RIGHT
 import java.io.Closeable
-import java.util.concurrent.atomic.AtomicLong
 
-class RedisRpopLpushClient(private val poolSize: Int) : Closeable {
+class RedisRpopLpushClient(private val poolSize: Int, private val counter: MetricsCounter) : Closeable {
     private val poolConfig = JedisPoolConfig().also {
         it.minIdle = poolSize
         it.maxTotal = poolSize
@@ -21,31 +21,22 @@ class RedisRpopLpushClient(private val poolSize: Int) : Closeable {
         .toCircularIterator()
     private val workingChannel = "rpush-lpop-working".toByteArray()
 
-    private val pushes = AtomicLong(0)
-    private val pops = AtomicLong(0)
-
-    fun getPushesCount() = pushes.get()
-
-    fun getPopsCount() = pops.get()
-
     fun push(message: ByteArray) {
         publishPool.resource.use { jedis ->
             jedis.rpush(nextChannel(), message)
-            pushes.incrementAndGet()
-            print('+')
+            counter.recordPush()
         }
     }
 
-    fun pop() {
+    fun pull() {
         publishPool.resource.use { jedis ->
             val bytes = jedis.lmove(nextChannel(), workingChannel, LEFT, RIGHT)
             if (bytes != null) {
-                pops.incrementAndGet()
-                print('-')
-            }
-            val count = jedis.lrem(workingChannel, 1, bytes)
-            for (i in 0 until count) {
-                print('\'')
+                counter.recordPull()
+                val count = jedis.lrem(workingChannel, 1, bytes)
+                for (i in 0 until count) {
+                    print('\'')
+                }
             }
         }
     }

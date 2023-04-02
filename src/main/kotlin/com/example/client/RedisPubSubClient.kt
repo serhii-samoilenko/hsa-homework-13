@@ -1,12 +1,12 @@
 package com.example.client
 
+import com.example.util.MetricsCounter
 import redis.clients.jedis.BinaryJedisPubSub
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPoolConfig
 import java.io.Closeable
-import java.util.concurrent.atomic.AtomicLong
 
-class RedisPubSubClient(private val poolSize: Int) : Closeable {
+class RedisPubSubClient(private val poolSize: Int, private val counter: MetricsCounter) : Closeable {
     private val listeners = mutableListOf<Listener>()
     private val poolConfig = JedisPoolConfig().also {
         it.minIdle = poolSize
@@ -20,17 +20,10 @@ class RedisPubSubClient(private val poolSize: Int) : Closeable {
         .map(String::toByteArray)
         .toCircularIterator()
 
-    private val pushes = AtomicLong(0)
-    private val pops = AtomicLong(0)
-
-    fun getPushesCount() = pushes.get()
-    fun getPopsCount() = pops.get()
-
     fun publish(message: ByteArray) {
         publishPool.resource.use { jedis ->
             jedis.publish(nextChannel(), message)
-            pushes.incrementAndGet()
-            print('+')
+            counter.recordPush()
         }
     }
 
@@ -59,8 +52,7 @@ class RedisPubSubClient(private val poolSize: Int) : Closeable {
 
     inner class Listener() : BinaryJedisPubSub() {
         override fun onMessage(channel: ByteArray, message: ByteArray) {
-            pops.incrementAndGet()
-            print('-')
+            counter.recordPull()
         }
     }
 

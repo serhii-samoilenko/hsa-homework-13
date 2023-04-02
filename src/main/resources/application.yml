@@ -1,4 +1,0 @@
-app:
-  redis:
-    pool-size: 10
-    pub-sub-channel: "demo"
