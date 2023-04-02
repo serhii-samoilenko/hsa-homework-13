@@ -20,6 +20,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("io.quarkus:quarkus-arc")
     implementation("org.apache.commons:commons-lang3:3.12.0")
+    implementation("org.apache.commons:commons-collections4:4.4")
     implementation("org.testcontainers:testcontainers:1.17.6")
     implementation("redis.clients:jedis:4.3.2")
     implementation("com.dinstone:beanstalkc:2.3.0")

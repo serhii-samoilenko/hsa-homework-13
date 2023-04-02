@@ -29,12 +29,12 @@ fun runDemo(helper: Helper) = with(helper) {
     )
     val messageSizes = listOf(
 //        "1-2Kb" to (1024..1024 * 2),
-        "10-20Kb" to (1024 * 10..1024 * 20),
+//        "10-20Kb" to (1024 * 10..1024 * 20),
 //        "50-100Kb" to (1024 * 50..1024 * 100),
         "500Kb-1Mb" to (1024 * 500..1024 * 1024),
 //        "5-10Mb" to (1024 * 1024 * 5..1024 * 1024 * 10),
     )
-    val runDuration = 10.seconds
+    val runDuration = 5.seconds
     val cooldownDuration = 3.seconds
     val results = LinkedHashMap<String, LinkedHashMap<String, Result>>()
     r.text("For each Redis persistence mode, another Redis Docker container will be started.")
@@ -73,9 +73,9 @@ fun runDemo(helper: Helper) = with(helper) {
         "Redis Pub-Sub AOF" to Docker.Service.REDIS_AOF,
         "Redis Pub-Sub RDB" to Docker.Service.REDIS_RDB,
     )
-    runBenchmarks(redisPubSubContainers, poolSizes, messageSizes) { duration, poolSize, messageSize ->
-        benchmarkPubSub(duration, poolSize, messageSize)
-    }
+//    runBenchmarks(redisPubSubContainers, poolSizes, messageSizes) { duration, poolSize, messageSize ->
+//        benchmarkPubSub(duration, poolSize, messageSize)
+//    }
 
     r.h2("Redis Rpush-Lpop in different persistence modes")
     val redisRpushLpopContainers = listOf(
@@ -83,9 +83,9 @@ fun runDemo(helper: Helper) = with(helper) {
         "Redis Rpush-Lpop AOF" to Docker.Service.REDIS_AOF,
         "Redis Rpush-Lpop RDB" to Docker.Service.REDIS_RDB,
     )
-    runBenchmarks(redisRpushLpopContainers, poolSizes, messageSizes) { duration, poolSize, messageSize ->
-        benchmarkRpushLpop(duration, poolSize, messageSize)
-    }
+//    runBenchmarks(redisRpushLpopContainers, poolSizes, messageSizes) { duration, poolSize, messageSize ->
+//        benchmarkRpushLpop(duration, poolSize, messageSize)
+//    }
 
     r.h2("BeansTalk without persistence, with immediate flush, and with 1s flush interval")
     val beanstalkdContainers = listOf(
